@@ -31,10 +31,16 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                // Redirect based on guard type
+                // If the request is for admin routes and user is authenticated as admin
+                if ($request->is('admin/*') && $guard === 'admin_web') {
+                    return redirect(RouteServiceProvider::ADMIN_HOME);
+                }
+                
+                // For all other cases, redirect to the appropriate home page
                 if ($guard === 'admin_web') {
                     return redirect(RouteServiceProvider::ADMIN_HOME);
                 }
+                
                 $this->redirectTo = RouteServiceProvider::getHome();
                 return redirect($this->redirectTo);
             }

@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\OrderController as ApiOrderController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\VersionUpdateController;
-use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use App\Models\Language;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
@@ -44,15 +43,6 @@ Auth::routes();
 // Social Login (Facebook, Google)
 Route::get('auth/{provider}', [LoginController::class, 'redirectSocialLogin'])->name('social.login');
 Route::get('auth/{provider}/callback', [LoginController::class, 'handleSocialLogin']);
-
-// Admin Authentication and Routes
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'admin']], function () {
-    Route::get('login', [AdminLoginController::class, 'showLoginForm'])->name('login');
-    Route::post('login', [AdminLoginController::class, 'login']);
-    Route::post('logout', [AdminLoginController::class, 'logout'])->name('logout');
-    Route::get('product/bulk-upload', 'BulkUploadController@product_bulk_upload')->name('product.bulk-upload.index');
-    Route::post('product/bulk-upload', 'BulkUploadController@product_bulk_upload_store')->name('product.bulk-upload.store');
-});
 
 // Additional Utility Routes
 Route::get('storage-link', function () {
