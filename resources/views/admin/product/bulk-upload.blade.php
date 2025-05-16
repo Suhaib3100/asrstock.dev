@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('content')
-    <!-- Page content area start -->
     <div class="p-sm-30 p-15">
         <div class="d-flex align-items-center justify-content-between flex-wrap g-15 pb-26">
             <h2 class="fs-24 fw-600 lh-29 text-primary-dark-text">{{ __($pageTitle) }}</h2>
@@ -10,8 +9,7 @@
                     <div class="breadcrumb__content__right">
                         <nav aria-label="breadcrumb">
                             <ul class="breadcrumb sf-breadcrumb">
-                                <li class="breadcrumb-item"><a
-                                        href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">{{ __('Dashboard') }}</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">{{ __($pageTitle) }}</li>
                             </ul>
                         </nav>
@@ -20,41 +18,143 @@
             </div>
         </div>
 
-        <div class="bg-danger-light-varient customers__area mb-30 bd-ra-10 p-sm-30 p-15">
-            <h2 class="mb-10">{{ __("Note") }}:</h2>
-            <p class="fw-bold mb-1">{{ __("Please backup the database and storage folder from root to avoid any invalid data mitchmatch") }}</p>
-            <p class="mb-1">{{ __("If main file is not matched with selected type then it will mark as not uploadable. Please change the product type currectly in mapping csv") }}</p>
-            <p class="mb-1">{{ __("If main file is not found or invalid then it will mark as not uploadable.") }}</p>
-            <p class="mb-1">{{ __("If any items has invalid item then it will not upload as mark as not uploadable.") }}</p>
-            <div class="bg-black p-2">
-                <p class="mb-1 text-white">{{ __("Download the sample zip file and prepare the file with your data.") }} <a class="text-link" download href="{{ asset('bulk-upload/sample.zip') }}"> {{ __("Download") }} </a></p>
-                <p class="mb-1 text-white">CSV file sequence, [Product Title, Thumbnail, Variation Name, Price (0 if free product), Main File, Product Type, Category, Tags with comma separate]</p>
+        <!-- Documentation Section -->
+        <div class="bg-info-light-varient customers__area mb-30 bd-ra-10 p-sm-30 p-15">
+            <h2 class="mb-10">{{ __("How to Bulk Upload Products") }}:</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="mb-3">{{ __("Step by Step Guide") }}:</h4>
+                    <ol class="ps-3">
+                        <li class="mb-2">{{ __("Click 'Add More' to add multiple product upload fields") }}</li>
+                        <li class="mb-2">{{ __("For each product:") }}
+                            <ul class="ps-3 mt-1">
+                                <li>{{ __("Select the product file (max 100MB)") }}</li>
+                                <li>{{ __("Enter a unique title") }}</li>
+                                <li>{{ __("Choose the appropriate category") }}</li>
+                                <li>{{ __("Set the price (0 for free products)") }}</li>
+                                <li>{{ __("Select accessibility (Paid/Free)") }}</li>
+                                <li>{{ __("Add relevant tags") }}</li>
+                            </ul>
+                        </li>
+                        <li class="mb-2">{{ __("Click 'Upload Products' to process all items") }}</li>
+                    </ol>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="mb-3">{{ __("Important Notes") }}:</h4>
+                    <ul class="ps-3">
+                        <li class="mb-2">{{ __("Maximum file size: 100MB per file") }}</li>
+                        <li class="mb-2">{{ __("Supported file types depend on the selected category") }}</li>
+                        <li class="mb-2">{{ __("All required fields must be filled") }}</li>
+                        <li class="mb-2">{{ __("Free products will be automatically marked as 'Use This Photo'") }}</li>
+                        <li class="mb-2">{{ __("You can add as many products as needed") }}</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
         <div class="bg-white bd-one bd-c-stroke bd-ra-10 p-sm-30 p-15">
-            <form action="{{ route('admin.product.bulk-upload.file') }}" method="post" class="form-horizontal"
-                enctype="multipart/form-data">
+            <form action="{{ route('admin.product.bulk-upload.store') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
                 @csrf
-                <div class="form-group row pb-20">
-                    <div class="col-md-12">
-                        <label for="bulk_upload_file"
-                            class="text-lg-right text-black">{{ __('Product File') }}</label>
-                        <div class="input-group mb-3">
-                            <input type="file" name="bulk_upload_file" id="bulk_upload_file"
-                                class="form-control">
-                            <div class="input-group-text mt-0">{{ __('Upload CSV File') }}</div>
+                <div id="upload-container">
+                    <div class="upload-item mb-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">{{ __('File') }} <span class="text-danger">*</span></label>
+                                    <input type="file" name="files[]" class="form-control" required accept="image/*,video/*,audio/*">
+                                    <small class="text-muted">{{ __('Max size: 100MB') }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">{{ __('Title') }} <span class="text-danger">*</span></label>
+                                    <input type="text" name="titles[]" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="form-label">{{ __('Category') }} <span class="text-danger">*</span></label>
+                                    <select name="categories[]" class="form-control" required>
+                                        <option value="">{{ __('Select Category') }}</option>
+                                        @foreach($productTypes as $type)
+                                            <optgroup label="{{ $type->name }}">
+                                                @foreach($type->categories as $category)
+                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="form-label">{{ __('Price') }}</label>
+                                    <input type="number" name="prices[]" class="form-control" min="0" step="0.01" value="0">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label class="form-label">{{ __('Accessibility') }}</label>
+                                    <select name="accessibility[]" class="form-control">
+                                        <option value="{{ PRODUCT_ACCESSIBILITY_PAID }}">{{ __('Paid') }}</option>
+                                        <option value="{{ PRODUCT_ACCESSIBILITY_FREE }}">{{ __('Free') }}</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        @error('bulk_upload_file')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                        <div class="row mt-2">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label">{{ __('Tags') }}</label>
+                                    <select name="tags[][]" class="form-control select2" multiple>
+                                        @foreach($tags as $tag)
+                                            <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bd-c-stroke bd-t-one justify-content-between align-items-center text-end pt-15">
-                    <button type="submit" class="border-0 bd-ra-12 bg-primary py-13 px-25 fs-16 fw-600 lh-19 text-white">{{ __('Check') }}</button>
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-info" id="add-more">
+                            <i class="fa fa-plus"></i> {{ __('Add More') }}
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-upload"></i> {{ __('Upload Products') }}
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 @endsection
+
+@push('script')
+<script>
+    $(document).ready(function() {
+        $('.select2').select2();
+        
+        $('#add-more').click(function() {
+            var clone = $('.upload-item:first').clone();
+            clone.find('input').val('');
+            clone.find('select').val('').trigger('change');
+            $('#upload-container').append(clone);
+            clone.find('.select2').select2();
+        });
+
+        // File size validation
+        $('input[type="file"]').on('change', function() {
+            var file = this.files[0];
+            var maxSize = 100 * 1024 * 1024; // 100MB in bytes
+            
+            if (file && file.size > maxSize) {
+                alert('{{ __("File size exceeds 100MB limit") }}');
+                this.value = '';
+            }
+        });
+    });
+</script>
+@endpush

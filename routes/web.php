@@ -46,10 +46,12 @@ Route::get('auth/{provider}', [LoginController::class, 'redirectSocialLogin'])->
 Route::get('auth/{provider}/callback', [LoginController::class, 'handleSocialLogin']);
 
 // Admin Authentication and Routes
-Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'admin']], function () {
     Route::get('login', [AdminLoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [AdminLoginController::class, 'login']);
     Route::post('logout', [AdminLoginController::class, 'logout'])->name('logout');
+    Route::get('product/bulk-upload', 'BulkUploadController@product_bulk_upload')->name('product.bulk-upload.index');
+    Route::post('product/bulk-upload', 'BulkUploadController@product_bulk_upload_store')->name('product.bulk-upload.store');
 });
 
 // Additional Utility Routes
