@@ -69,7 +69,7 @@
         </div>
 
         <div class="bg-white bd-one bd-c-stroke bd-ra-10 p-sm-30 p-15">
-            <form action="{{ route('admin.product.bulk-upload.store') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+            <form action="{{ route('admin.product.bulk-upload.file') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
                 @csrf
                 <div id="upload-container">
                     <div class="upload-item mb-4">
