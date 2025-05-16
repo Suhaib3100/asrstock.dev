@@ -35,7 +35,7 @@ class BulkUploadController extends Controller
     public function product_bulk_upload()
     {
         $pageTitle = 'Bulk Upload Products';
-        $productTypes = ProductCategory::with('categories')->get();
+        $productTypes = ProductType::with('categories')->get();
         return view('admin.product.bulk-upload', compact('pageTitle', 'productTypes'));
     }
 
