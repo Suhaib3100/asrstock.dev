@@ -187,20 +187,36 @@ class BulkUploadController extends Controller
             
             // Add headers
             fputcsv($file, [
-                'filename',
-                'title',
-                'price',
-                'accessibility',
-                'tags'
+                'filename',      // Required: Name of the image file in the ZIP
+                'title',         // Required: Product title
+                'price',         // Optional: Product price (default: 0)
+                'accessibility', // Optional: free/paid (default: paid)
+                'tags'          // Optional: Comma-separated tags
             ]);
 
-            // Add example row
+            // Add example rows
             fputcsv($file, [
-                'example.jpg',
-                'Example Product',
+                'product1.jpg',
+                'Beautiful Sunset Landscape',
+                '19.99',
+                'paid',
+                'nature, sunset, landscape'
+            ]);
+
+            fputcsv($file, [
+                'product2.jpg',
+                'Mountain View',
+                '29.99',
+                'paid',
+                'mountain, nature, landscape'
+            ]);
+
+            fputcsv($file, [
+                'product3.jpg',
+                'Free Beach Photo',
                 '0',
                 'free',
-                'tag1, tag2, tag3'
+                'beach, ocean, summer'
             ]);
 
             fclose($file);
