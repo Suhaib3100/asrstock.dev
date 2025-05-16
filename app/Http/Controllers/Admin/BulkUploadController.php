@@ -154,7 +154,7 @@ class BulkUploadController extends Controller
                     $product = new Product();
                     $product->title = $data['title'];
                     $product->slug = Str::slug($data['title']);
-                    $product->category_id = $categoryId;
+                    $product->product_category_id = $categoryId;
                     $product->price = $data['price'] ?? 0;
                     $product->accessibility = $data['accessibility'] ?? self::PRODUCT_ACCESSIBILITY_PAID;
                     $product->status = self::PRODUCT_STATUS_ACTIVE;
