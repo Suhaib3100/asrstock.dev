@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
-use League\Csv\Reader;
 use ZipArchive;
 
 class BulkUploadController extends Controller
@@ -80,32 +79,49 @@ class BulkUploadController extends Controller
                 throw new \Exception('No CSV file found in the ZIP');
             }
 
-            // Process CSV
-            $csv = Reader::createFromPath($csvFile, 'r');
-            $csv->setHeaderOffset(0);
-            $records = $csv->getRecords();
+            // Process CSV using native PHP functions
+            $handle = fopen($csvFile, 'r');
+            if ($handle === false) {
+                throw new \Exception('Could not open CSV file');
+            }
+
+            // Read headers
+            $headers = fgetcsv($handle);
+            if ($headers === false) {
+                throw new \Exception('Invalid CSV format');
+            }
+
+            // Validate required headers
+            $requiredHeaders = ['filename', 'title'];
+            $missingHeaders = array_diff($requiredHeaders, $headers);
+            if (!empty($missingHeaders)) {
+                throw new \Exception('Missing required headers: ' . implode(', ', $missingHeaders));
+            }
 
             $processed = 0;
             $errors = [];
             $categoryId = $request->category_id;
 
-            foreach ($records as $record) {
+            // Process each row
+            while (($record = fgetcsv($handle)) !== false) {
                 try {
+                    $data = array_combine($headers, $record);
+                    
                     // Validate required fields
-                    if (empty($record['filename']) || empty($record['title'])) {
+                    if (empty($data['filename']) || empty($data['title'])) {
                         throw new \Exception('Missing required fields');
                     }
 
                     // Check if file exists in ZIP
-                    $filePath = $tempPath . '/' . $record['filename'];
+                    $filePath = $tempPath . '/' . $data['filename'];
                     if (!file_exists($filePath)) {
-                        throw new \Exception('File not found in ZIP: ' . $record['filename']);
+                        throw new \Exception('File not found in ZIP: ' . $data['filename']);
                     }
 
                     // Process tags
                     $tagIds = [];
-                    if (!empty($record['tags'])) {
-                        $tagNames = array_map('trim', explode(',', $record['tags']));
+                    if (!empty($data['tags'])) {
+                        $tagNames = array_map('trim', explode(',', $data['tags']));
                         foreach ($tagNames as $tagName) {
                             $tag = Tag::firstOrCreate(['name' => $tagName]);
                             $tagIds[] = $tag->id;
@@ -114,10 +130,10 @@ class BulkUploadController extends Controller
 
                     // Create product
                     $product = new Product();
-                    $product->title = $record['title'];
+                    $product->title = $data['title'];
                     $product->category_id = $categoryId;
-                    $product->price = $record['price'] ?? 0;
-                    $product->accessibility = $record['accessibility'] ?? PRODUCT_ACCESSIBILITY_PAID;
+                    $product->price = $data['price'] ?? 0;
+                    $product->accessibility = $data['accessibility'] ?? PRODUCT_ACCESSIBILITY_PAID;
                     $product->status = PRODUCT_STATUS_ACTIVE;
                     $product->save();
 
@@ -127,7 +143,7 @@ class BulkUploadController extends Controller
                     }
 
                     // Move file to storage
-                    $extension = pathinfo($record['filename'], PATHINFO_EXTENSION);
+                    $extension = pathinfo($data['filename'], PATHINFO_EXTENSION);
                     $newFilename = 'products/' . $product->id . '.' . $extension;
                     Storage::put($newFilename, file_get_contents($filePath));
                     $product->file = $newFilename;
@@ -138,6 +154,8 @@ class BulkUploadController extends Controller
                     $errors[] = "Row {$processed}: " . $e->getMessage();
                 }
             }
+
+            fclose($handle);
 
             // Cleanup
             $this->rrmdir($tempPath);
