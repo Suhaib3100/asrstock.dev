@@ -1,0 +1,185 @@
+.footer {
+  &-section {
+    padding: 0 toRem(15);
+  }
+  &-overlay {
+    max-width: toRem(1820);
+    margin: 0 auto;
+    padding: toRem(140) 0 0;
+    border-radius: toRem(20);
+    overflow: hidden;
+    @media screen and (max-width: 991px) {
+      padding: toRem(100) 0 0;
+    }
+    @media screen and (max-width: 575px) {
+      padding: toRem(50) 0 0;
+    }
+  }
+  &-subscribe {
+    text-align: center;
+    .title {
+      padding-bottom: toRem(15);
+      @include fontFamilyAlt(48, $fw_bold, 1.209, $white-text);
+      letter-spacing: -0.02em;
+      @media screen and (max-width: 991px) {
+        font-size: toRem(40);
+      }
+      @media screen and (max-width: 575px) {
+        font-size: toRem(28);
+      }
+    }
+    .info {
+      padding-bottom: toRem(35);
+      @include fontFamilyAlt(16, $fw_regular, 1.63, $footer-menu-text);
+      @media screen and (max-width: 575px) {
+        padding-bottom: toRem(20);
+      }
+    }
+    .subscribe-form {
+      max-width: toRem(731);
+      width: 100%;
+      margin: 0 auto;
+      border-radius: toRem(10);
+      background-color: $white-text;
+      backdrop-filter: blur(26px);
+      padding: toRem(5);
+      display: flex;
+      align-items: center;
+      @media screen and (max-width: 575px) {
+        flex-direction: column;
+      }
+      input {
+        display: block;
+        width: 100%;
+        background-color: $white-text;
+        border: none;
+        border-radius: 0;
+        padding: 0 toRem(25);
+        font-size: toRem(16);
+        font-weight: $fw_regular;
+        line-height: toRem(26);
+        color: $primary-dark-text;
+        @media screen and (max-width: 767px) {
+          padding: 0 toRem(15);
+        }
+        @media screen and (max-width: 575px) {
+          padding: toRem(15);
+        }
+        &::placeholder {
+          font-size: toRem(16);
+          font-weight: $fw_regular;
+          line-height: toRem(26);
+          color: $para-text;
+        }
+      }
+      button {
+        flex-shrink: 0;
+        border: toRem(1) solid $primary;
+        border-radius: toRem(10);
+        background-color: $primary;
+        padding: toRem(14) toRem(34);
+        @include fontFamily(14, $fw_semiBold, 20, $white-text);
+        @media screen and (max-width: 575px) {
+          width: 100%;
+        }
+      }
+    }
+  }
+  &-top {
+    padding: toRem(60) 0 toRem(70);
+    @media screen and (max-width: 991px) {
+      padding: toRem(50) 0;
+    }
+    @media screen and (max-width: 575px) {
+      padding: toRem(30) 0;
+    }
+  }
+  &-menu {
+    &-title {
+      @include fontFamilyAlt(20, $fw_medium, 1.5, $white-text);
+      padding-bottom: toRem(31);
+    }
+    li {
+      padding-bottom: toRem(12);
+      &:last-child {
+        padding-bottom: 0;
+      }
+      .link {
+        position: relative;
+        display: inline-block;
+        @include fontFamily(16, $fw_regular, 26, $footer-menu-text);
+        transition: all 0.3s;
+        &::before {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 0%;
+          height: 1px;
+          background-color: $primary;
+          transition: all 0.5s ease 0s;
+        }
+        &:hover {
+          color: $primary;
+          &::before {
+            width: 100%;
+            left: 0;
+            right: auto;
+          }
+        }
+      }
+    }
+  }
+  &-bottom {
+    border-top: toRem(1) solid #2f3741;
+    padding: toRem(11) 0 toRem(9);
+    .text {
+      @include fontFamily(16, $fw_regular, 26, $white-text);
+      .link {
+        position: relative;
+        color: $white-text;
+        transition: all 0.3s;
+        &::before {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 0%;
+          height: 1px;
+          background-color: $primary;
+          transition: all 0.5s ease 0s;
+        }
+        &:hover {
+          color: $primary;
+          &::before {
+            width: 100%;
+            left: 0;
+            right: auto;
+          }
+        }
+      }
+    }
+  }
+  &-social {
+    display: flex;
+    align-items: center;
+    gap: toRem(5);
+    a {
+      width: toRem(40);
+      height: toRem(40);
+      border: toRem(1) solid $secondary-light;
+      border-radius: 50%;
+      background-color: $primary-light;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: $primary-dark-text;
+      transition: background-color 0.3s ease 0s, border-color 0.3s ease 0s;
+      &:hover {
+        background-color: $primary;
+        border-color: $primary;
+        color: $white;
+      }
+    }
+  }
+}

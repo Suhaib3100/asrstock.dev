@@ -1,0 +1,473 @@
+/*===============================
+ #.header-area
+=================================*/
+.header {
+    &-section {
+        padding: toRem(20) 0;
+        @media screen and (max-width: 991px) {
+            padding: toRem(20) 0;
+        }
+    }
+    &-wrap {
+        max-width: toRem(1819);
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: toRem(10);
+    }
+    &-left {
+        @media screen and (max-width: 991px) {
+            width: 100%;
+        }
+        .navbar {
+            gap: toRem(46);
+            @media screen and (max-width: 1439px) {
+                gap: toRem(20);
+            }
+            @media screen and (max-width: 1023px) {
+                flex-direction: row-reverse;
+            }
+            &-brand {
+                flex-shrink: 0;
+                padding: 0;
+                margin: 0;
+                max-width: toRem(150);
+            }
+            &-nav {
+                gap: toRem(26);
+                @media screen and (max-width: 1439px) {
+                    gap: toRem(20);
+                }
+                .nav {
+                    &-link {
+                        position: relative;
+                        padding: 0;
+                        @include fontFamily(
+                            16,
+                            $fw_regular,
+                            26,
+                            $primary-dark-text
+                        );
+                        transition: all 0.3s;
+                        @media screen and (max-width: 1199px) {
+                            display: inline-block;
+                            color: $white;
+                        }
+                        &::before {
+                            content: "";
+                            position: absolute;
+                            bottom: 0;
+                            right: 0;
+                            width: 0%;
+                            height: 1px;
+                            background-color: $primary;
+                            transition: all 0.5s ease 0s;
+                            @media screen and (max-width: 1199px) {
+                                background-color: $white;
+                            }
+                        }
+                        &:hover {
+                            color: $primary;
+                            @media screen and (max-width: 1199px) {
+                                color: $white;
+                            }
+                            &::before {
+                                width: 100%;
+                                left: 0;
+                                right: auto;
+                            }
+                        }
+                    }
+                }
+            }
+            &-toggler {
+                width: toRem(40);
+                height: toRem(40);
+                border: toRem(1) solid $stroke;
+                color: $primary-dark-text;
+                padding: toRem(4);
+            }
+        }
+    }
+    &-right {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: toRem(30);
+        @media screen and (max-width: 1439px) {
+            gap: toRem(10);
+        }
+        @media screen and (max-width: 1199px) {
+            gap: toRem(30);
+        }
+        @media screen and (max-width: 991px) {
+            flex-shrink: 0;
+        }
+    }
+    &-userInfo {
+        padding: toRem(20);
+        display: flex;
+        align-items: center;
+        gap: toRem(13);
+        .profileImage-upload {
+            background-color: transparent;
+            border: none;
+            border-radius: 0;
+            width: toRem(52);
+            height: toRem(52);
+            position: relative;
+            > img {
+                background-color: $primary;
+                width: toRem(52);
+                height: toRem(52);
+                border-radius: 50%;
+            }
+            .icon {
+                position: absolute;
+                bottom: calc(-1 * toRem(10));
+                right: 0;
+                width: toRem(28);
+                height: toRem(28);
+                border: none;
+                border-radius: 50%;
+                background-color: $bg-color-2;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10;
+                cursor: pointer;
+                img {
+                    position: relative;
+                    max-width: toRem(16);
+                    max-height: toRem(16);
+                    top: auto;
+                    left: auto;
+                    transform: translate(0);
+                }
+            }
+            input {
+                top: auto !important;
+                left: auto !important;
+                max-width: toRem(38);
+                height: toRem(38);
+                border: toRem(1) solid #fff;
+                border-radius: 50%;
+                background-color: $primary;
+                cursor: pointer;
+            }
+        }
+        .name {
+            @include fontFamily(18, $fw_regular, 28, $primary-dark-text);
+        }
+        .info {
+            @include fontFamily(14, $fw_regular, 24, $para-text);
+        }
+    }
+    &-creditsInfo {
+        padding: toRem(12) toRem(20) toRem(17);
+        background-color: $logout;
+        .title {
+            @include fontFamily(14, $fw_regular, 24, $para-text);
+            padding-bottom: toRem(10);
+            span {
+                color: $primary-dark-text;
+            }
+        }
+        .link {
+            display: inline-flex;
+            border: toRem(1) solid $primary-dark-text;
+            border-radius: toRem(10);
+            background-color: $primary-dark-text;
+            padding: toRem(14) toRem(34);
+            @include fontFamily(14, $fw_semiBold, 20, $white-text !important);
+            transition: all 0.3s;
+            &:hover {
+                background-color: $primary;
+                border-color: $primary;
+            }
+        }
+    }
+    &-menuList-block {
+        > li {
+            padding: toRem(20);
+            border-bottom: toRem(1) solid $stroke;
+        }
+        .menuItem-block {
+            li {
+                padding-bottom: toRem(15);
+                &:last-child {
+                    padding-bottom: 0;
+                }
+                .link {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: toRem(10);
+                    @include fontFamily(
+                        14,
+                        $fw_regular,
+                        24,
+                        $primary-dark-text
+                    );
+                    transition: all 0.3s;
+                    svg {
+                        path {
+                            transition: all 0.3s;
+                        }
+                    }
+                    .content {
+                        display: flex;
+                        align-items: center;
+                        gap: toRem(10);
+                        .icon {
+                            flex-shrink: 0;
+                            width: toRem(20);
+                            display: flex;
+                        }
+                        .text {
+                            transition: all 0.3s;
+                        }
+                    }
+                    &:hover {
+                        color: $primary;
+                        svg {
+                            path {
+                                stroke: $primary;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    &-logoutWrap {
+        padding: toRem(20);
+    }
+    &-search {
+        background-color: $stroke;
+        border: toRem(1) solid $stroke;
+        border-radius: toRem(10);
+        max-width: toRem(1819);
+        margin: 0 auto;
+        margin-top: toRem(10);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: toRem(1);
+        @media screen and (max-width: 575px) {
+            flex-direction: column;
+        }
+        .inputWrap {
+            position: relative;
+            flex: 1 0 auto;
+            @media screen and (max-width: 575px) {
+                width: 100%;
+            }
+            input {
+                display: block;
+                width: 100%;
+                padding: toRem(16) toRem(60) toRem(16) toRem(25);
+                font-size: toRem(14);
+                font-weight: $fw_regular;
+                line-height: toRem(24);
+                color: $primary-dark-text;
+                background-color: $white;
+                border: none;
+                border-radius: toRem(0);
+                @media screen and (max-width: 991px) {
+                    padding: toRem(16) toRem(50) toRem(16) toRem(16);
+                }
+                @media screen and (max-width: 575px) {
+                    padding: toRem(16) toRem(20) toRem(16) toRem(16);
+                }
+                &:focus,
+                &:hover {
+                    border: none;
+                    background-color: $white !important;
+                    box-shadow: 0 0 0 rgb(0 0 0 / 0);
+                }
+                &::placeholder {
+                    font-size: toRem(14);
+                    font-weight: $fw_regular;
+                    line-height: toRem(24);
+                    color: $para-text;
+                }
+                &:not(:placeholder-shown) ~ button {
+                    display: flex;
+                }
+            }
+            button {
+                position: absolute;
+                top: 50%;
+                right: toRem(25);
+                transform: translateY(-50%);
+                width: toRem(30);
+                height: toRem(30);
+                border: none;
+                border-radius: 50%;
+                background-color: $bg-color-2;
+                display: none;
+                justify-content: center;
+                align-items: center;
+                color: $primary-dark-text;
+                @media screen and (max-width: 991px) {
+                    right: toRem(15);
+                }
+            }
+        }
+        .buttonWrap {
+            flex: 1 0 auto;
+            max-width: toRem(90);
+            background-color: $white;
+            padding: toRem(5);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            border-radius: 0 toRem(10) toRem(10) 0;
+            @media screen and (max-width: 991px) {
+                max-width: toRem(70);
+            }
+            @media screen and (max-width: 575px) {
+                max-width: 100%;
+                width: 100%;
+                border-radius: 0 0 toRem(10) toRem(10);
+            }
+            button {
+                padding: toRem(10) toRem(17);
+                border: none;
+                border-radius: toRem(5);
+                background-color: $secondary;
+                backdrop-filter: blur(26px);
+                @media screen and (max-width: 575px) {
+                    padding: toRem(10) 0;
+                    width: 100%;
+                }
+            }
+        }
+        &.sticky-on {
+            top: 0;
+            width: 100%;
+            max-width: calc(100% - 24px);
+            z-index: 20;
+            position: fixed;
+            animation-duration: 0.7s;
+            animation-fill-mode: both;
+            animation-name: fadeInDown;
+            animation-timing-function: ease;
+            transition: 0.3s all ease-in-out;
+            box-shadow: 0 3px 18px rgba(2, 21, 78, 0.09);
+        }
+    }
+}
+.home-heroBanner-search {
+    background-color: $stroke;
+    border: toRem(1) solid $stroke;
+    border-radius: toRem(10);
+    max-width: toRem(1819);
+    margin: 0 auto;
+    margin-top: toRem(10);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: toRem(1);
+    @media screen and (max-width: 575px) {
+        flex-direction: column;
+    }
+    .inputWrap {
+        position: relative;
+        flex: 1 0 auto;
+        @media screen and (max-width: 575px) {
+            width: 100%;
+        }
+        input {
+            display: block;
+            width: 100%;
+            padding: toRem(16) toRem(60) toRem(16) toRem(25);
+            font-size: toRem(14);
+            font-weight: $fw_regular;
+            line-height: toRem(24);
+            color: $primary-dark-text;
+            background-color: $white;
+            border: none;
+            border-radius: toRem(0);
+            @media screen and (max-width: 991px) {
+                padding: toRem(16) toRem(50) toRem(16) toRem(16);
+            }
+            @media screen and (max-width: 575px) {
+                padding: toRem(16) toRem(20) toRem(16) toRem(16);
+            }
+            &:focus,
+            &:hover {
+                border: none;
+                background-color: $white !important;
+                box-shadow: 0 0 0 rgb(0 0 0 / 0);
+            }
+            &::placeholder {
+                font-size: toRem(14);
+                font-weight: $fw_regular;
+                line-height: toRem(24);
+                color: $para-text;
+            }
+            &:not(:placeholder-shown) ~ button {
+                display: flex;
+            }
+        }
+        button {
+            position: absolute;
+            top: 50%;
+            right: toRem(25);
+            transform: translateY(-50%);
+            width: toRem(30);
+            height: toRem(30);
+            border: none;
+            border-radius: 50%;
+            background-color: $bg-color-2;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: $primary-dark-text;
+            @media screen and (max-width: 991px) {
+                right: toRem(15);
+            }
+        }
+    }
+    .buttonWrap {
+        flex: 1 0 auto;
+        max-width: toRem(90);
+        background-color: $white;
+        padding: toRem(5);
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        border-radius: 0 toRem(10) toRem(10) 0;
+        @media screen and (max-width: 991px) {
+            max-width: toRem(70);
+        }
+        @media screen and (max-width: 575px) {
+            max-width: 100%;
+            width: 100%;
+            border-radius: 0 0 toRem(10) toRem(10);
+        }
+        button {
+            padding: toRem(10) toRem(17);
+            border: none;
+            border-radius: toRem(5);
+            background-color: $secondary;
+            backdrop-filter: blur(26px);
+            @media screen and (max-width: 575px) {
+                padding: toRem(10) 0;
+                width: 100%;
+            }
+        }
+    }
+}
+
+.menu {
+    &-navbar-collapse {
+        @media screen and (max-width: 1199px) {
+            background-color: $primary;
+            padding: toRem(40) toRem(30);
+        }
+    }
+}

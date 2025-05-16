@@ -1,0 +1,79 @@
+.zMain {
+  &-signLog {
+    &-content {
+      max-width: toRem(603);
+      width: 100%;
+      margin: 0 auto;
+      min-height: toRem(589);
+      padding: toRem(56);
+      background-color: $white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      @media screen and (max-width: 575px) {
+        padding: toRem(20);
+      }
+    }
+  }
+}
+
+.signLog-section {
+  height: 100vh;
+  display: flex;
+  overflow-y: hidden;
+  background: linear-gradient(306.78deg, #0aeffe 0%, #ffffff 52.08%, #4cd4ff 100%);
+  padding: toRem(20);
+  @media screen and (max-width: 575px) {
+    padding: toRem(10);
+  }
+  &-wrap {
+    display: flex;
+    flex-direction: row-reverse;
+    max-width: toRem(1440);
+    width: 100%;
+    margin: 0 auto;
+    .left,
+    .right {
+      width: 50%;
+      height: 100%;
+    }
+    .left {
+      background-color: $primary;
+      padding: 30px;
+      @media screen and (max-width: 991px) {
+        width: 100%;
+      }
+      @media screen and (max-width: 575px) {
+        padding: 10px;
+      }
+      .wrap {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+    .right {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      @media screen and (max-width: 991px) {
+        display: none;
+      }
+      .content {
+        max-width: toRem(453);
+        .title {
+          padding-bottom: toRem(12);
+          @include fontFamily(42, $fw_semiBold, 62, $white);
+          span {
+            font-size: toRem(52);
+          }
+        }
+        .info {
+          @include fontFamily(15, $fw_regular, 25, $white);
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+.zaiStock {
+  &-btn {
+    border: toRem(1) solid $primary;
+    border-radius: toRem(10);
+    background-color: $primary;
+    padding: toRem(14) toRem(34);
+    @include fontFamily(14, $fw_semiBold, 20, $white-text !important);
+    @media screen and (max-width: 767px) {
+      padding: toRem(14) toRem(24);
+    }
+    &-secondary {
+      border: toRem(1) solid $secondary;
+      border-radius: toRem(10);
+      background-color: $secondary;
+      padding: toRem(14) toRem(34);
+      @include fontFamily(14, $fw_semiBold, 20, $primary !important);
+      @media screen and (max-width: 767px) {
+        padding: toRem(14) toRem(24);
+      }
+    }
+    &-follow {
+      border: none;
+      border-radius: toRem(8);
+      background-color: $primary;
+      padding: toRem(5) toRem(18);
+      @include fontFamily(14, $fw_semiBold, 24, $white !important);
+    }
+    &-unfollow {
+      border: none;
+      border-radius: toRem(8);
+      background-color: $secondary;
+      padding: toRem(5) toRem(18);
+      @include fontFamily(14, $fw_semiBold, 24, $primary !important);
+    }
+    &-cancel {
+      border: none;
+      border-radius: toRem(8);
+      background-color: $red-light;
+      padding: toRem(14) toRem(34);
+      @include fontFamily(14, $fw_semiBold, 24, $red !important);
+      @media screen and (max-width: 767px) {
+        padding: toRem(14) toRem(24);
+      }
+    }
+  }
+}
+.logoutBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: toRem(5);
+  padding: toRem(5) toRem(18);
+  border-radius: toRem(8);
+  background-color: $secondary;
+  @include fontFamily(14, $fw_regular, 24, $primary !important);
+}

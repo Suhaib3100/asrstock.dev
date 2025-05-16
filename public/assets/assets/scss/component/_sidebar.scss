@@ -1,0 +1,216 @@
+.zSidebar {
+  &-logo {
+    padding: 0 toRem(30);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 100%;
+    height: toRem(77);
+    background-color: $white;
+    img {
+      max-width: toRem(94);
+      max-height: toRem(34);
+    }
+  }
+  &-menu {
+    > li {
+      position: relative;
+      padding: 0 toRem(12);
+      &.sidebar-divider {
+        border-top: toRem(1) solid $black;
+        padding: 0;
+        padding-top: toRem(13);
+        padding-bottom: toRem(19);
+        margin: toRem(18) toRem(30) 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      &:not(&.sidebar-divider) {
+        margin-bottom: toRem(5);
+      }
+      &:first-child {
+        &.sidebar-divider {
+          margin-top: 0;
+          border-top: none;
+        }
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
+      svg {
+        max-width: 16px;
+        max-height: 16px;
+      }
+      > a {
+        position: relative;
+        padding: toRem(12) toRem(18);
+        border-radius: toRem(8);
+        span {
+          position: relative;
+          display: inline-block;
+          @include fontFamily(14, $fw_semiBold, 14, $black);
+          transition: all 0.3s;
+          &::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: calc(-1 * toRem(12));
+            transform: translateY(-50%);
+            width: toRem(5);
+            height: toRem(5);
+            border-radius: 50%;
+            background-color: $black;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+          }
+        }
+        &::before {
+          position: absolute;
+          content: "";
+          width: 0.5em;
+          height: 0.5em;
+          border-width: 1px 0 0 1px;
+          border-style: solid;
+          border-color: $para-text;
+          right: 1em;
+          transform: rotate(135deg) translate(0, -50%);
+          transform-origin: top;
+          top: 50%;
+          opacity: 0;
+          visibility: hidden;
+          transition: all 0.3s ease-out;
+        }
+        ~ div .zSidebar-submenu {
+          padding: toRem(10) 0 toRem(10) toRem(43);
+          li {
+            padding-bottom: toRem(6);
+            &:last-child {
+              padding-bottom: 0;
+            }
+            a {
+              position: relative;
+              padding-left: toRem(12);
+              display: block;
+              @include fontFamily(12, $fw_medium, 15, $para-text);
+              &::before {
+                content: "";
+                position: absolute;
+                top: toRem(5);
+                left: 0;
+                width: toRem(5);
+                height: toRem(5);
+                border-radius: 50%;
+                background-color: $para-text;
+              }
+              &:hover,
+              &.active {
+                color: $primary;
+                &::before {
+                  background-color: $primary;
+                }
+              }
+            }
+          }
+        }
+        &.has-subMenu-arrow {
+          &::before {
+            opacity: 1;
+            visibility: visible;
+          }
+        }
+        &:has(~ div ul.zSidebar-submenu li) {
+          &::before {
+            opacity: 1;
+            visibility: visible;
+          }
+        }
+        &[aria-expanded="true"] {
+          &::before {
+            transform: rotate(227deg);
+          }
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: calc(-1 * toRem(14));
+          transform: translateY(-50%);
+          width: toRem(2);
+          height: 100%;
+          background-color: $primary;
+          transition: all 0.3s;
+        }
+        &:hover,
+        &.active {
+          svg {
+            path {
+              fill: $primary;
+            }
+          }
+          .superAdmin-allOrder {
+            svg {
+              path {
+                fill: transparent !important;
+                stroke: $primary;
+              }
+            }
+          }
+          &.menu {
+            &-svg-stroke {
+              svg {
+                path {
+                  fill: none;
+                  stroke: $primary;
+                }
+              }
+            }
+            &-subscription {
+              svg {
+                path {
+                  &:first-child {
+                    fill: none;
+                    stroke: $primary;
+                  }
+                }
+              }
+            }
+          }
+          span {
+            color: $primary;
+            &::before {
+              background-color: $primary;
+            }
+          }
+          &::before {
+            border-color: $primary;
+          }
+          &::after {
+            left: -11px;
+          }
+        }
+        &.active {
+          span {
+            &::before {
+              opacity: 1;
+              visibility: visible;
+            }
+          }
+        }
+      }
+    }
+  }
+  &-fixed {
+    max-height: calc(100% - toRem(85));
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none !important;
+    }
+  }
+}

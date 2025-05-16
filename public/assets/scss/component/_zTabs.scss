@@ -1,0 +1,187 @@
+.zTab {
+    &-reset {
+        --bs-nav-link-padding-x: 0;
+        --bs-nav-link-padding-y: 0;
+        --bs-nav-link-font-weight: 400;
+        --bs-nav-link-color: #fff;
+        --bs-nav-tabs-border-width: 0;
+        --bs-nav-tabs-border-color: #fff;
+        --bs-nav-tabs-border-radius: 0;
+        --bs-nav-tabs-link-active-color: #fff;
+        --bs-nav-tabs-link-active-bg: #fff;
+        flex-wrap: nowrap;
+        border-bottom: none;
+    }
+    &-one {
+        padding-bottom: toRem(40);
+        @media screen and (max-width: 991px) {
+            padding-bottom: toRem(20);
+        }
+        .nav {
+            &-link {
+                position: relative;
+                width: 100%;
+                padding: toRem(13) toRem(35);
+                background-color: transparent;
+                border-radius: toRem(4);
+                white-space: nowrap;
+                @include fontFamily(14, $fw_regular, 24, $para-text);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: toRem(9);
+                @media screen and (max-width: 1199px) {
+                    padding: toRem(13);
+                }
+                @media screen and (max-width: 575px) {
+                    padding: toRem(10);
+                }
+                .icon {
+                    width: toRem(24);
+                    height: toRem(24);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    svg {
+                        path {
+                            transition: all 0.3s;
+                        }
+                    }
+                    @media screen and (max-width: 991px) {
+                        display: none;
+                    }
+                }
+                .dotShape {
+                    width: toRem(3);
+                    height: toRem(3);
+                    border-radius: 50%;
+                    background-color: $para-text;
+                    transform: scale(1);
+                    transition: all 0.3s;
+                }
+                &.active {
+                    background-color: $secondary;
+                    color: $primary;
+                    .icon {
+                        svg {
+                            path {
+                                stroke: $primary;
+                            }
+                        }
+                    }
+                    .dotShape {
+                        display: none;
+                        transform: scale(0);
+                    }
+                }
+            }
+        }
+    }
+    &-two {
+        gap: toRem(16);
+        .nav {
+            &-item {
+                position: relative;
+                &::before {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    left: 0;
+                    transform: translateY(-50%);
+                    width: toRem(20);
+                    height: toRem(20);
+                    border: toRem(4) solid $white;
+                    outline: toRem(1) solid $stroke;
+                    border-radius: 50%;
+                    background-color: transparent;
+                    padding: toRem(4);
+                }
+                &:has(input:checked) {
+                    &::before {
+                        background-color: $primary;
+                    }
+                }
+                label {
+                    cursor: pointer;
+                }
+                input {
+                    position: absolute;
+                    visibility: hidden;
+                    z-index: -1;
+                }
+            }
+            &-link {
+                position: relative;
+                width: 100%;
+                padding: 0;
+                background-color: transparent;
+                border-radius: 0;
+                white-space: nowrap;
+                cursor: pointer;
+                padding-left: toRem(28);
+                @include fontFamily(14, $fw_regular, 24, $primary-dark-text);
+                &.active {
+                    background-color: transparent;
+                    color: $primary-dark-text;
+                }
+            }
+        }
+    }
+    &-three {
+        @media screen and (max-width: 991px) {
+            justify-content: center;
+            flex-wrap: wrap !important;
+            row-gap: toRem(10);
+            padding-bottom: toRem(20);
+        }
+        .nav {
+            &-link {
+                position: relative;
+                padding: toRem(0) toRem(24) toRem(23);
+                background-color: transparent;
+                border-radius: 0;
+                white-space: nowrap;
+                @include fontFamily(16, $fw_regular, 26, $para-text);
+                display: flex;
+                align-items: center;
+                gap: toRem(0);
+                @media screen and (max-width: 1399px) {
+                    padding: toRem(0) toRem(20) toRem(23);
+                }
+                @media screen and (max-width: 991px) {
+                    padding: toRem(10) toRem(15);
+                    background-color: $white;
+                    border-radius: toRem(5);
+                }
+                @media screen and (max-width: 575px) {
+                    font-size: toRem(12);
+                    line-height: toRem(20);
+                }
+                &::before {
+                    content: "";
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 0%;
+                    height: toRem(2);
+                    background-color: $primary;
+                    transition: all 0.3s;
+                    @media screen and (max-width: 991px) {
+                        display: none;
+                    }
+                }
+                &.active {
+                    background-color: transparent;
+                    color: $primary;
+                    @media screen and (max-width: 991px) {
+                        background-color: $primary !important;
+                        color: $white;
+                    }
+                    &::before {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+}

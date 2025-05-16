@@ -1,0 +1,25 @@
+.create-item-section {
+  background-color: $white;
+  border: toRem(1) solid $black;
+  border-radius: toRem(15);
+  padding: 0 toRem(30);
+  min-height: calc(100vh - 157px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .img {
+    padding-bottom: toRem(40);
+  }
+  .title {
+    @include fontFamily(24, $fw_semiBold, 32, $textBlack);
+    text-align: center;
+    padding-bottom: toRem(23);
+  }
+  .link {
+    border-radius: toRem(4);
+    background-color: $primary;
+    padding: toRem(8) toRem(20);
+    @include fontFamily(15, $fw_bold, 25, $white);
+  }
+}

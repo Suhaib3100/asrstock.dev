@@ -1,0 +1,46 @@
+// Breadcrumb
+.breadcrumb {
+  &-section {
+    padding: 0 toRem(15);
+  }
+  &-content {
+    max-width: toRem(1820);
+    margin: 0 auto;
+    border-radius: toRem(20);
+    overflow: hidden;
+    padding: toRem(43) toRem(20) toRem(47);
+    @media screen and (max-width: 767px) {
+      padding: toRem(30) toRem(20);
+    }
+    .title {
+      @include fontFamilyAlt(48, $fw_bold, 1.21, $white);
+      letter-spacing: -0.02em;
+      padding-bottom: toRem(22);
+      text-align: center;
+      @media screen and (max-width: 767px) {
+        font-size: toRem(38);
+        padding-bottom: toRem(15);
+      }
+    }
+  }
+  &.sf-breadcrumb {
+    --bs-breadcrumb-margin-bottom: 0;
+    --bs-breadcrumb-divider-color: var(--footer-menu-text);
+    --bs-breadcrumb-item-active-color: var(--footer-menu-text);
+    justify-content: center;
+    @include fontFamily(18, $fw_regular, 34, $footer-menu-text !important);
+    a {
+      @include fontFamily(16, $fw_regular, 26, $footer-menu-text);
+    }
+    li {
+      &.breadcrumb-item + .breadcrumb-item::before {
+        content: var(--bs-breadcrumb-divider, "/");
+      }
+      &.active {
+        a {
+          color: $footer-menu-text !important;
+        }
+      }
+    }
+  }
+}
