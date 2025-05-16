@@ -179,6 +179,11 @@ class Product extends Model
         return $query->whereUploadedBy(PRODUCT_UPLOADED_BY_CONTRIBUTOR);
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'product_tags', 'product_id', 'tag_id');
+    }
+
     protected static function boot()
     {
         parent::boot();
