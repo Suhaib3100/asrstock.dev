@@ -112,6 +112,9 @@ class BulkUploadController extends Controller
                         throw new \Exception('Missing required fields');
                     }
 
+                    // Clean filename - remove any commas and trim
+                    $data['filename'] = trim(str_replace(',', '', $data['filename']));
+
                     // Check if file exists in ZIP
                     $filePath = $tempPath . '/' . $data['filename'];
                     if (!file_exists($filePath)) {
@@ -123,14 +126,24 @@ class BulkUploadController extends Controller
                     if (!empty($data['tags'])) {
                         $tagNames = array_map('trim', explode(',', $data['tags']));
                         foreach ($tagNames as $tagName) {
-                            $tag = Tag::firstOrCreate(['name' => $tagName]);
-                            $tagIds[] = $tag->id;
+                            $tagName = trim($tagName);
+                            if (!empty($tagName)) {
+                                $tag = Tag::firstOrCreate(
+                                    ['name' => $tagName],
+                                    [
+                                        'slug' => Str::slug($tagName),
+                                        'uuid' => Str::uuid()
+                                    ]
+                                );
+                                $tagIds[] = $tag->id;
+                            }
                         }
                     }
 
                     // Create product
                     $product = new Product();
                     $product->title = $data['title'];
+                    $product->slug = Str::slug($data['title']);
                     $product->category_id = $categoryId;
                     $product->price = $data['price'] ?? 0;
                     $product->accessibility = $data['accessibility'] ?? PRODUCT_ACCESSIBILITY_PAID;
