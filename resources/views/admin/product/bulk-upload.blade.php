@@ -20,10 +20,10 @@
 
         <!-- Documentation Section -->
         <div class="bg-info-light-varient customers__area mb-30 bd-ra-10 p-sm-30 p-15">
-            <h2 class="mb-10">{{ __("How to Bulk Upload Products") }}:</h2>
+            <h2 class="mb-10">{{ __("Bulk Upload Guide") }}:</h2>
             <div class="row">
                 <div class="col-md-6">
-                    <h4 class="mb-3">{{ __("Step by Step Guide") }}:</h4>
+                    <h4 class="mb-3">{{ __("Quick Start Guide") }}:</h4>
                     <ol class="ps-3">
                         <li class="mb-2">{{ __("Click 'Add More' to add multiple product upload fields") }}</li>
                         <li class="mb-2">{{ __("For each product:") }}
@@ -40,14 +40,30 @@
                     </ol>
                 </div>
                 <div class="col-md-6">
-                    <h4 class="mb-3">{{ __("Important Notes") }}:</h4>
-                    <ul class="ps-3">
-                        <li class="mb-2">{{ __("Maximum file size: 100MB per file") }}</li>
-                        <li class="mb-2">{{ __("Supported file types depend on the selected category") }}</li>
-                        <li class="mb-2">{{ __("All required fields must be filled") }}</li>
-                        <li class="mb-2">{{ __("Free products will be automatically marked as 'Use This Photo'") }}</li>
-                        <li class="mb-2">{{ __("You can add as many products as needed") }}</li>
-                    </ul>
+                    <h4 class="mb-3">{{ __("Important Information") }}:</h4>
+                    <div class="bg-white p-3 rounded">
+                        <h5 class="mb-2">{{ __("File Requirements") }}:</h5>
+                        <ul class="ps-3 mb-3">
+                            <li>{{ __("Maximum file size: 100MB per file") }}</li>
+                            <li>{{ __("Supported formats depend on category type") }}</li>
+                            <li>{{ __("Files must be valid and not corrupted") }}</li>
+                        </ul>
+
+                        <h5 class="mb-2">{{ __("Product Information") }}:</h5>
+                        <ul class="ps-3 mb-3">
+                            <li>{{ __("Titles must be unique") }}</li>
+                            <li>{{ __("Categories must match file type") }}</li>
+                            <li>{{ __("Free products are marked as 'Use This Photo'") }}</li>
+                        </ul>
+
+                        <h5 class="mb-2">{{ __("Tips") }}:</h5>
+                        <ul class="ps-3">
+                            <li>{{ __("Use descriptive titles for better searchability") }}</li>
+                            <li>{{ __("Add relevant tags to improve product visibility") }}</li>
+                            <li>{{ __("Verify file compatibility before upload") }}</li>
+                            <li>{{ __("Check category requirements for file types") }}</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -145,14 +161,45 @@
             clone.find('.select2').select2();
         });
 
-        // File size validation
+        // Enhanced file validation
         $('input[type="file"]').on('change', function() {
             var file = this.files[0];
             var maxSize = 100 * 1024 * 1024; // 100MB in bytes
+            var $this = $(this);
+            var $parent = $this.closest('.upload-item');
             
-            if (file && file.size > maxSize) {
-                alert('{{ __("File size exceeds 100MB limit") }}');
-                this.value = '';
+            if (file) {
+                if (file.size > maxSize) {
+                    alert('{{ __("File size exceeds 100MB limit") }}');
+                    this.value = '';
+                    return;
+                }
+
+                // Auto-fill title from filename if empty
+                var $titleInput = $parent.find('input[name="titles[]"]');
+                if (!$titleInput.val()) {
+                    var fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
+                    $titleInput.val(fileName);
+                }
+            }
+        });
+
+        // Category change handler
+        $('select[name="categories[]"]').on('change', function() {
+            var $this = $(this);
+            var $parent = $this.closest('.upload-item');
+            var $fileInput = $parent.find('input[type="file"]');
+            
+            // Update accepted file types based on category
+            var categoryId = $this.val();
+            if (categoryId) {
+                // You can add specific file type restrictions based on category here
+                // For example:
+                // if (categoryId === '1') {
+                //     $fileInput.attr('accept', 'image/*');
+                // } else if (categoryId === '2') {
+                //     $fileInput.attr('accept', 'video/*');
+                // }
             }
         });
     });
