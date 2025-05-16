@@ -31,8 +31,8 @@ class BulkUploadController extends Controller
     const PRODUCT_STATUS_PENDING = 2;
 
     // Product Accessibility Constants
-    const PRODUCT_ACCESSIBILITY_FREE = 'free';
-    const PRODUCT_ACCESSIBILITY_PAID = 'paid';
+    const PRODUCT_ACCESSIBILITY_FREE = 2;
+    const PRODUCT_ACCESSIBILITY_PAID = 1;
 
     public $model;
     public $productUploadService;
@@ -156,7 +156,11 @@ class BulkUploadController extends Controller
                     $product->slug = Str::slug($data['title']);
                     $product->product_category_id = $categoryId;
                     $product->price = $data['price'] ?? 0;
-                    $product->accessibility = $data['accessibility'] ?? self::PRODUCT_ACCESSIBILITY_PAID;
+                    
+                    // Convert accessibility string to integer
+                    $accessibility = strtolower($data['accessibility'] ?? 'paid');
+                    $product->accessibility = $accessibility === 'free' ? self::PRODUCT_ACCESSIBILITY_FREE : self::PRODUCT_ACCESSIBILITY_PAID;
+                    
                     $product->status = self::PRODUCT_STATUS_ACTIVE;
                     $product->save();
 
