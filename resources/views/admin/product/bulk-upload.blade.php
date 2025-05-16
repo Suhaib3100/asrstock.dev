@@ -25,43 +25,44 @@
                 <div class="col-md-6">
                     <h4 class="mb-3">{{ __("Quick Start Guide") }}:</h4>
                     <ol class="ps-3">
-                        <li class="mb-2">{{ __("Click 'Add More' to add multiple product upload fields") }}</li>
-                        <li class="mb-2">{{ __("For each product:") }}
+                        <li class="mb-2">{{ __("Prepare your files:") }}
                             <ul class="ps-3 mt-1">
-                                <li>{{ __("Select the product file (max 100MB)") }}</li>
-                                <li>{{ __("Enter a unique title") }}</li>
-                                <li>{{ __("Choose the appropriate category") }}</li>
-                                <li>{{ __("Set the price (0 for free products)") }}</li>
-                                <li>{{ __("Select accessibility (Paid/Free)") }}</li>
-                                <li>{{ __("Add relevant tags") }}</li>
+                                <li>{{ __("Create a CSV file with required columns") }}</li>
+                                <li>{{ __("Place all media files in a folder") }}</li>
+                                <li>{{ __("Zip the CSV and media files together") }}</li>
                             </ul>
                         </li>
-                        <li class="mb-2">{{ __("Click 'Upload Products' to process all items") }}</li>
+                        <li class="mb-2">{{ __("Upload the ZIP file") }}</li>
+                        <li class="mb-2">{{ __("Monitor the upload progress") }}</li>
+                        <li class="mb-2">{{ __("Review and confirm the upload") }}</li>
                     </ol>
                 </div>
                 <div class="col-md-6">
-                    <h4 class="mb-3">{{ __("Important Information") }}:</h4>
+                    <h4 class="mb-3">{{ __("CSV Format") }}:</h4>
                     <div class="bg-white p-3 rounded">
-                        <h5 class="mb-2">{{ __("File Requirements") }}:</h5>
+                        <h5 class="mb-2">{{ __("Required Columns") }}:</h5>
                         <ul class="ps-3 mb-3">
-                            <li>{{ __("Maximum file size: 100MB per file") }}</li>
-                            <li>{{ __("Supported formats depend on category type") }}</li>
-                            <li>{{ __("Files must be valid and not corrupted") }}</li>
+                            <li><code>filename</code> - {{ __("Name of the media file in the ZIP") }}</li>
+                            <li><code>title</code> - {{ __("Product title") }}</li>
+                            <li><code>category_id</code> - {{ __("Category ID") }}</li>
+                            <li><code>price</code> - {{ __("Product price (0 for free)") }}</li>
+                            <li><code>accessibility</code> - {{ __("Paid/Free") }}</li>
+                            <li><code>tags</code> - {{ __("Comma-separated tag names") }}</li>
                         </ul>
 
-                        <h5 class="mb-2">{{ __("Product Information") }}:</h5>
+                        <h5 class="mb-2">{{ __("File Requirements") }}:</h5>
                         <ul class="ps-3 mb-3">
-                            <li>{{ __("Titles must be unique") }}</li>
-                            <li>{{ __("Categories must match file type") }}</li>
-                            <li>{{ __("Free products are marked as 'Use This Photo'") }}</li>
+                            <li>{{ __("Maximum ZIP size: 500MB") }}</li>
+                            <li>{{ __("Supported media formats: Images, Videos, Audio") }}</li>
+                            <li>{{ __("CSV must be UTF-8 encoded") }}</li>
                         </ul>
 
                         <h5 class="mb-2">{{ __("Tips") }}:</h5>
                         <ul class="ps-3">
-                            <li>{{ __("Use descriptive titles for better searchability") }}</li>
-                            <li>{{ __("Add relevant tags to improve product visibility") }}</li>
-                            <li>{{ __("Verify file compatibility before upload") }}</li>
-                            <li>{{ __("Check category requirements for file types") }}</li>
+                            <li>{{ __("Use descriptive filenames") }}</li>
+                            <li>{{ __("Verify all media files are valid") }}</li>
+                            <li>{{ __("Check CSV format before uploading") }}</li>
+                            <li>{{ __("Download the template for reference") }}</li>
                         </ul>
                     </div>
                 </div>
@@ -69,78 +70,50 @@
         </div>
 
         <div class="bg-white bd-one bd-c-stroke bd-ra-10 p-sm-30 p-15">
-            <form action="{{ route('admin.product.bulk-upload.file') }}" method="post" class="form-horizontal" enctype="multipart/form-data">
+            <form action="{{ route('admin.product.bulk-upload.file') }}" method="post" class="form-horizontal" enctype="multipart/form-data" id="bulkUploadForm">
                 @csrf
-                <div id="upload-container">
-                    <div class="upload-item mb-4">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label">{{ __('File') }} <span class="text-danger">*</span></label>
-                                    <input type="file" name="files[]" class="form-control" required accept="image/*,video/*,audio/*">
-                                    <small class="text-muted">{{ __('Max size: 100MB') }}</small>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label class="form-label">{{ __('Title') }} <span class="text-danger">*</span></label>
-                                    <input type="text" name="titles[]" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label class="form-label">{{ __('Category') }} <span class="text-danger">*</span></label>
-                                    <select name="categories[]" class="form-control" required>
-                                        <option value="">{{ __('Select Category') }}</option>
-                                        @foreach($productTypes as $type)
-                                            <optgroup label="{{ $type->name }}">
-                                                @foreach($type->categories as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                                @endforeach
-                                            </optgroup>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label class="form-label">{{ __('Price') }}</label>
-                                    <input type="number" name="prices[]" class="form-control" min="0" step="0.01" value="0">
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label class="form-label">{{ __('Accessibility') }}</label>
-                                    <select name="accessibility[]" class="form-control">
-                                        <option value="{{ PRODUCT_ACCESSIBILITY_PAID }}">{{ __('Paid') }}</option>
-                                        <option value="{{ PRODUCT_ACCESSIBILITY_FREE }}">{{ __('Free') }}</option>
-                                    </select>
-                                </div>
-                            </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">{{ __('ZIP File') }} <span class="text-danger">*</span></label>
+                            <input type="file" name="zip_file" class="form-control" required accept=".zip">
+                            <small class="text-muted">{{ __('Max size: 500MB') }}</small>
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="form-label">{{ __('Tags') }}</label>
-                                    <select name="tags[][]" class="form-control select2" multiple>
-                                        @foreach($tags as $tag)
-                                            <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">{{ __('Category') }} <span class="text-danger">*</span></label>
+                            <select name="category_id" class="form-control" required>
+                                <option value="">{{ __('Select Category') }}</option>
+                                @foreach($productTypes as $type)
+                                    <optgroup label="{{ $type->name }}">
+                                        @foreach($type->categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                                         @endforeach
-                                    </select>
-                                </div>
-                            </div>
+                                    </optgroup>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
 
                 <div class="row mt-4">
                     <div class="col-md-12">
-                        <button type="button" class="btn btn-info" id="add-more">
-                            <i class="fa fa-plus"></i> {{ __('Add More') }}
-                        </button>
-                        <button type="submit" class="btn btn-primary">
+                        <div class="progress d-none" id="uploadProgress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <div class="mt-3 d-none" id="uploadStatus"></div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-primary" id="uploadButton">
                             <i class="fa fa-upload"></i> {{ __('Upload Products') }}
                         </button>
+                        <a href="{{ route('admin.product.bulk-upload.template') }}" class="btn btn-info">
+                            <i class="fa fa-download"></i> {{ __('Download Template') }}
+                        </a>
                     </div>
                 </div>
             </form>
@@ -151,56 +124,59 @@
 @push('script')
 <script>
     $(document).ready(function() {
-        $('.select2').select2();
-        
-        $('#add-more').click(function() {
-            var clone = $('.upload-item:first').clone();
-            clone.find('input').val('');
-            clone.find('select').val('').trigger('change');
-            $('#upload-container').append(clone);
-            clone.find('.select2').select2();
-        });
-
-        // Enhanced file validation
-        $('input[type="file"]').on('change', function() {
-            var file = this.files[0];
-            var maxSize = 100 * 1024 * 1024; // 100MB in bytes
-            var $this = $(this);
-            var $parent = $this.closest('.upload-item');
+        $('#bulkUploadForm').on('submit', function(e) {
+            e.preventDefault();
             
-            if (file) {
-                if (file.size > maxSize) {
-                    alert('{{ __("File size exceeds 100MB limit") }}');
-                    this.value = '';
-                    return;
-                }
-
-                // Auto-fill title from filename if empty
-                var $titleInput = $parent.find('input[name="titles[]"]');
-                if (!$titleInput.val()) {
-                    var fileName = file.name.replace(/\.[^/.]+$/, ""); // Remove extension
-                    $titleInput.val(fileName);
-                }
-            }
-        });
-
-        // Category change handler
-        $('select[name="categories[]"]').on('change', function() {
-            var $this = $(this);
-            var $parent = $this.closest('.upload-item');
-            var $fileInput = $parent.find('input[type="file"]');
+            var formData = new FormData(this);
+            var $progress = $('#uploadProgress');
+            var $progressBar = $progress.find('.progress-bar');
+            var $status = $('#uploadStatus');
+            var $button = $('#uploadButton');
             
-            // Update accepted file types based on category
-            var categoryId = $this.val();
-            if (categoryId) {
-                // You can add specific file type restrictions based on category here
-                // For example:
-                // if (categoryId === '1') {
-                //     $fileInput.attr('accept', 'image/*');
-                // } else if (categoryId === '2') {
-                //     $fileInput.attr('accept', 'video/*');
-                // }
-            }
+            $progress.removeClass('d-none');
+            $status.removeClass('d-none');
+            $button.prop('disabled', true);
+            
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener('progress', function(e) {
+                        if (e.lengthComputable) {
+                            var percent = Math.round((e.loaded / e.total) * 100);
+                            $progressBar.css('width', percent + '%');
+                            $status.html('{{ __("Uploading") }}: ' + percent + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $status.html('<div class="alert alert-success">' + response.message + '</div>');
+                        if (response.redirect) {
+                            setTimeout(function() {
+                                window.location.href = response.redirect;
+                            }, 2000);
+                        }
+                    } else {
+                        $status.html('<div class="alert alert-danger">' + response.message + '</div>');
+                    }
+                },
+                error: function(xhr) {
+                    var message = '{{ __("Upload failed") }}';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    $status.html('<div class="alert alert-danger">' + message + '</div>');
+                },
+                complete: function() {
+                    $button.prop('disabled', false);
+                }
+            });
         });
     });
 </script>

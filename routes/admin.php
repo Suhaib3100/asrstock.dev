@@ -118,6 +118,7 @@ Route::group(['middleware' => ['web', 'auth:admin_web', 'installed', 'version.up
         Route::group(['prefix' => 'bulk-upload', 'as' => 'bulk-upload.'], function () {
             Route::get('/', [BulkUploadController::class, 'product_bulk_upload'])->name('index')->middleware('permission:product_bulk_upload');
             Route::post('file', [BulkUploadController::class, 'product_bulk_upload_file'])->name('file');
+            Route::get('template', [BulkUploadController::class, 'product_bulk_upload_template'])->name('template');
             Route::get('check', [BulkUploadController::class, 'product_bulk_upload_check'])->name('check');
             Route::post('confirm', [BulkUploadController::class, 'product_bulk_upload_confirm'])->name('confirm');
         });

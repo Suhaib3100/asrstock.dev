@@ -15,6 +15,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use League\Csv\Reader;
+use ZipArchive;
 
 class BulkUploadController extends Controller
 {
@@ -30,123 +34,175 @@ class BulkUploadController extends Controller
 
     public function product_bulk_upload()
     {
-        $data['pageTitle'] = 'Product Bulk Upload';
-        $data['subNavProductBulkUploadActiveClass'] = 'active';
-        $data['showProducts'] = 'show';
-        $data['productTypes'] = ProductType::active()->get();
-        $data['tags'] = Tag::all();
-        return view('admin.product.bulk-upload', $data);
+        $pageTitle = 'Bulk Upload Products';
+        $productTypes = ProductCategory::with('categories')->get();
+        return view('admin.product.bulk-upload', compact('pageTitle', 'productTypes'));
     }
 
-    public function product_bulk_upload_store(Request $request)
+    public function product_bulk_upload_file(Request $request)
     {
-        $request->validate([
-            'files.*' => 'required|file|max:102400', // 100MB max
-            'titles.*' => 'required|string|max:255',
-            'categories.*' => 'required|exists:product_categories,id',
-            'prices.*' => 'required|numeric|min:0',
-            'accessibility.*' => 'required|in:1,2', // 1=free, 2=paid
-            'tags.*' => 'nullable|array',
-            'tags.*.*' => 'exists:tags,id'
+        $validator = Validator::make($request->all(), [
+            'zip_file' => 'required|file|mimes:zip|max:512000', // 500MB max
+            'category_id' => 'required|exists:product_categories,id'
         ]);
 
-        DB::beginTransaction();
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
+
         try {
-            $files = $request->file('files');
-            $titles = $request->input('titles');
-            $categories = $request->input('categories');
-            $tags = $request->input('tags');
-            $prices = $request->input('prices');
-            $accessibility = $request->input('accessibility');
-            
-            $successCount = 0;
-            $failedCount = 0;
-            $failedItems = [];
+            $zipFile = $request->file('zip_file');
+            $tempPath = storage_path('app/temp/' . uniqid());
+            mkdir($tempPath, 0755, true);
 
-            foreach ($files as $index => $file) {
+            // Extract ZIP file
+            $zip = new ZipArchive;
+            if ($zip->open($zipFile->getPathname()) === TRUE) {
+                $zip->extractTo($tempPath);
+                $zip->close();
+            } else {
+                throw new \Exception('Failed to extract ZIP file');
+            }
+
+            // Find CSV file
+            $csvFile = null;
+            foreach (glob($tempPath . '/*.csv') as $file) {
+                $csvFile = $file;
+                break;
+            }
+
+            if (!$csvFile) {
+                throw new \Exception('No CSV file found in the ZIP');
+            }
+
+            // Process CSV
+            $csv = Reader::createFromPath($csvFile, 'r');
+            $csv->setHeaderOffset(0);
+            $records = $csv->getRecords();
+
+            $processed = 0;
+            $errors = [];
+            $categoryId = $request->category_id;
+
+            foreach ($records as $record) {
                 try {
-                    $category = ProductCategory::find($categories[$index]);
-                    if (!$category) {
-                        $failedCount++;
-                        $failedItems[] = [
-                            'title' => $titles[$index],
-                            'reason' => 'Invalid category'
-                        ];
-                        continue;
+                    // Validate required fields
+                    if (empty($record['filename']) || empty($record['title'])) {
+                        throw new \Exception('Missing required fields');
                     }
 
-                    // Check if title is unique
-                    if (Product::where('title', $titles[$index])->exists()) {
-                        $titles[$index] = $titles[$index] . '-' . Str::random(6);
+                    // Check if file exists in ZIP
+                    $filePath = $tempPath . '/' . $record['filename'];
+                    if (!file_exists($filePath)) {
+                        throw new \Exception('File not found in ZIP: ' . $record['filename']);
                     }
 
-                    // Validate file type against category requirements
-                    $fileExtension = strtolower($file->getClientOriginalExtension());
-                    $productType = ProductType::find($category->product_type_id);
-                    
-                    if ($productType && !$productType->product_type_extensions->where('name', $fileExtension)->count()) {
-                        $failedCount++;
-                        $failedItems[] = [
-                            'title' => $titles[$index],
-                            'reason' => 'File type not allowed for this category'
-                        ];
-                        continue;
+                    // Process tags
+                    $tagIds = [];
+                    if (!empty($record['tags'])) {
+                        $tagNames = array_map('trim', explode(',', $record['tags']));
+                        foreach ($tagNames as $tagName) {
+                            $tag = Tag::firstOrCreate(['name' => $tagName]);
+                            $tagIds[] = $tag->id;
+                        }
                     }
 
-                    $item = [
-                        'title' => $titles[$index],
-                        'product_type_id' => $category->product_type_id,
-                        'product_category_id' => $category->id,
-                        'tags' => $tags[$index] ?? [],
-                        'accessibility' => $accessibility[$index] ?? PRODUCT_ACCESSIBILITY_PAID,
-                        'price' => $prices[$index] ?? 0,
-                        'main_files' => [$file],
-                        'file_types' => $fileExtension,
-                        'status' => ACTIVE
-                    ];
+                    // Create product
+                    $product = new Product();
+                    $product->title = $record['title'];
+                    $product->category_id = $categoryId;
+                    $product->price = $record['price'] ?? 0;
+                    $product->accessibility = $record['accessibility'] ?? PRODUCT_ACCESSIBILITY_PAID;
+                    $product->status = PRODUCT_STATUS_ACTIVE;
+                    $product->save();
 
-                    if ($item['accessibility'] == PRODUCT_ACCESSIBILITY_FREE) {
-                        $item['use_this_photo'] = 1;
+                    // Attach tags
+                    if (!empty($tagIds)) {
+                        $product->tags()->attach($tagIds);
                     }
 
-                    $result = $this->productUploadService->store($item, 1);
-                    if ($result['status']) {
-                        $successCount++;
+                    // Move file to storage
+                    $extension = pathinfo($record['filename'], PATHINFO_EXTENSION);
+                    $newFilename = 'products/' . $product->id . '.' . $extension;
+                    Storage::put($newFilename, file_get_contents($filePath));
+                    $product->file = $newFilename;
+                    $product->save();
+
+                    $processed++;
+                } catch (\Exception $e) {
+                    $errors[] = "Row {$processed}: " . $e->getMessage();
+                }
+            }
+
+            // Cleanup
+            $this->rrmdir($tempPath);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Successfully processed {$processed} products" . 
+                            (!empty($errors) ? ". Errors: " . implode(', ', $errors) : ''),
+                'redirect' => route('admin.product.index')
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing upload: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    public function product_bulk_upload_template()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="bulk_upload_template.csv"',
+        ];
+
+        $callback = function() {
+            $file = fopen('php://output', 'w');
+            
+            // Add headers
+            fputcsv($file, [
+                'filename',
+                'title',
+                'price',
+                'accessibility',
+                'tags'
+            ]);
+
+            // Add example row
+            fputcsv($file, [
+                'example.jpg',
+                'Example Product',
+                '0',
+                'free',
+                'tag1, tag2, tag3'
+            ]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    private function rrmdir($dir)
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (is_dir($dir . "/" . $object)) {
+                        $this->rrmdir($dir . "/" . $object);
                     } else {
-                        $failedCount++;
-                        $failedItems[] = [
-                            'title' => $titles[$index],
-                            'reason' => $result['message'] ?? 'Upload failed'
-                        ];
+                        unlink($dir . "/" . $object);
                     }
-                } catch (Exception $e) {
-                    Log::error('Bulk upload error for file ' . $file->getClientOriginalName() . ': ' . $e->getMessage());
-                    $failedCount++;
-                    $failedItems[] = [
-                        'title' => $titles[$index] ?? 'Unknown',
-                        'reason' => 'System error: ' . $e->getMessage()
-                    ];
                 }
             }
-
-            DB::commit();
-
-            $message = "Successfully uploaded {$successCount} products.";
-            if ($failedCount > 0) {
-                $message .= " Failed to upload {$failedCount} products:";
-                foreach ($failedItems as $item) {
-                    $message .= "\n- {$item['title']}: {$item['reason']}";
-                }
-            }
-
-            return redirect()->route('admin.product.bulk-upload.index')
-                ->with('success', $message)
-                ->with('failed_items', $failedItems);
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('Bulk upload error: ' . $e->getMessage());
-            return redirect()->route('admin.product.bulk-upload.index')
-                ->with('error', 'An error occurred during bulk upload: ' . $e->getMessage());
+            rmdir($dir);
         }
     }
 }
