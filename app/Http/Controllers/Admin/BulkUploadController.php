@@ -24,6 +24,16 @@ use ZipArchive;
 class BulkUploadController extends Controller
 {
     use ApiStatusTrait;
+
+    // Product Status Constants
+    const PRODUCT_STATUS_ACTIVE = 1;
+    const PRODUCT_STATUS_INACTIVE = 0;
+    const PRODUCT_STATUS_PENDING = 2;
+
+    // Product Accessibility Constants
+    const PRODUCT_ACCESSIBILITY_FREE = 'free';
+    const PRODUCT_ACCESSIBILITY_PAID = 'paid';
+
     public $model;
     public $productUploadService;
     
